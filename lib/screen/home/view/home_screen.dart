@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 30)),
+                  const SliverToBoxAdapter(child: SizedBox(height: 20)),
                   const SliverToBoxAdapter(
                       child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 28),
@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 30)),
+                  const SliverToBoxAdapter(child: SizedBox(height: 20)),
                   const SliverToBoxAdapter(
                       child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 28),
@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontWeight: FontWeight.w400),
                     ),
                   )),
-                  const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                  const SliverToBoxAdapter(child: SizedBox(height: 10)),
                   SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
