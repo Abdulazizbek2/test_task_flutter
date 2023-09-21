@@ -15,6 +15,35 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late ScrollController _scrollController;
+  @override
+  void initState() {
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    super.dispose();
+  }
+
+  bool lastStatus = true;
+
+  _scrollListener() {
+    if (isShrink != lastStatus) {
+      setState(() {
+        lastStatus = isShrink;
+      });
+    }
+  }
+
+  bool get isShrink {
+    return _scrollController.hasClients &&
+        _scrollController.offset > (105 - kToolbarHeight);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -33,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
               final featureList = state.featureArticleList;
               final latestList = state.latestArticleList;
               return CustomScrollView(
+                controller: _scrollController,
                 slivers: [
                   SliverAppBar(
                     backgroundColor: theme.primaryColor,
@@ -80,24 +110,43 @@ class _HomeScreenState extends State<HomeScreen> {
                   )),
                   const SliverToBoxAdapter(child: SizedBox(height: 20)),
                   SliverToBoxAdapter(
-                    child: SizedBox(
-                      height: 300,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
+                      onEnd: () {},
+                      height: isShrink ? 123 : 300,
                       child: PageView.builder(
                         clipBehavior: Clip.hardEdge,
                         physics: const ClampingScrollPhysics(),
                         scrollDirection: Axis.horizontal,
                         itemCount: state.featureArticleList?.length ?? 2,
                         itemBuilder: (context, index) {
-                          return FeaturedCard(
-                            title: featureList?[index].title ?? "",
-                            imageUrl: featureList?[index].imageUrl ?? "",
-                            onPressed: () {
-                              context.read<NewsBloc>().add(NewsEvent.readed(
-                                  latestList?[index].id ?? ""));
-                              Navigator.of(context).push(AppRoutes.news(context,
-                                  id: featureList?[index].id ?? ""));
-                            },
-                          );
+                          return isShrink
+                              ? LatestCard(
+                                  title: featureList?[index].title ?? "",
+                                  imageUrl: featureList?[index].imageUrl ?? "",
+                                  onPressed: () {
+                                    context.read<NewsBloc>().add(
+                                        NewsEvent.readed(
+                                            latestList?[index].id ?? ""));
+                                    Navigator.of(context).push(AppRoutes.news(
+                                        context,
+                                        id: featureList?[index].id ?? ""));
+                                  },
+                                  isReaded: featureList?[index].readed ?? false,
+                                  date: featureList?[index].publicationDate,
+                                )
+                              : FeaturedCard(
+                                  title: featureList?[index].title ?? "",
+                                  imageUrl: featureList?[index].imageUrl ?? "",
+                                  onPressed: () {
+                                    context.read<NewsBloc>().add(
+                                        NewsEvent.readed(
+                                            latestList?[index].id ?? ""));
+                                    Navigator.of(context).push(AppRoutes.news(
+                                        context,
+                                        id: featureList?[index].id ?? ""));
+                                  },
+                                );
                         },
                       ),
                     ),
@@ -134,6 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       childCount: latestList?.length ?? 2,
                     ),
                   ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 200)),
                 ],
               );
             },
